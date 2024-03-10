@@ -1,0 +1,92 @@
+package tech.csm.domain;
+
+import java.io.Serializable;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class BillProduct implements Serializable {
+
+	@JsonProperty("bp_id")
+	private Integer bpId;
+
+	@JsonProperty("bill_id")
+	private Integer billId;
+
+	@JsonProperty("product_id")
+	private Integer productId;
+
+	@JsonProperty("no_of_units")
+	private Integer noOfUnits;
+	
+	private Bill bill;
+	
+	@JsonIgnore
+	private Product product;
+	
+	private List<Product> productList;
+
+	public Integer getBpId() {
+		return bpId;
+	}
+
+	public void setBpId(Integer bpId) {
+		this.bpId = bpId;
+	}
+
+	public Integer getBillId() {
+		return billId;
+	}
+
+	public void setBillId(Integer billId) {
+		this.billId = billId;
+	}
+
+	public Integer getProductId() {
+		return productId;
+	}
+
+	public void setProductId(Integer productId) {
+		this.productId = productId;
+	}
+
+	public Integer getNoOfUnits() {
+		return noOfUnits;
+	}
+
+	public void setNoOfUnits(Integer noOfUnits) {
+		this.noOfUnits = noOfUnits;
+	}
+
+	public Bill getBill() {
+		return bill;
+	}
+
+	public void setBill(Bill bill) {
+		this.bill = bill;
+	}
+
+	public Product getProduct() {
+		return product;
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
+	}
+
+	public List<Product> getProductList() {
+		return productList;
+	}
+
+	public void setProductList(List<Product> productList) {
+		this.productList = productList;
+	}
+
+	@Override
+	public String toString() {
+		return "BillProduct [bpId=" + bpId + ", billId=" + billId + ", productId=" + productId + ", noOfUnits="
+				+ noOfUnits + ", bill=" + bill + ", product=" + product + ", productList=" + productList + "]";
+	}
+
+}
