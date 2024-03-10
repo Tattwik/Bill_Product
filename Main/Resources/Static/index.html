@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>POS form</title>
+<link rel="stylesheet" href="css/bootstrap.css">
+
+<script src="js/jQuery.js"></script>
+</head>
+<body>
+	<div class="container mt-3">
+		<div class="h2 text-center text-dark">POS Form</div>
+		<div class="card">
+			<div class="card-header">
+				<div>POS Form</div>
+
+			</div>
+			<div class="card-body">
+				<div class="container">
+					<form id="empformid">
+						<div class="row">
+							<div class="col-6">
+								<label for="" class="font-weight-bold">Customer Name</label> <input
+									type="text" id="custnameId" class="form-control" 
+									>
+							</div>
+							<div class="col-6">
+								<label for="" class="font-weight-bold">Phone no</label> <input
+									type="text" id="custphnId" class="form-control"
+									>
+							</div>
+							<div class="col-4">
+								<label for="" class="font-weight-bold">Choose a product</label>
+								<select id="prodId" class="form-control"
+									onchange="findUnitCostByProductId(this.value)">
+
+								</select>
+							</div>
+							<div class="col-2">
+								<label for="" class="font-weight-bold">No. of units</label> <input
+									type="text" id="unitId" class="form-control">
+							</div>
+							<div class="col-2">
+								<label for="uniPriceId" class="font-weight-bold">Unit
+									Price</label> <input type="text" readonly class="form-control"
+									name="uniPrice" id="uniPriceId">
+							</div>
+							<div class="mt-4 text-center ">
+								<input type="button" value="add more"
+									class="mt-2 btn btn-primary" id="moreId">
+							</div>
+						</div>
+
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="mt-4 text-center ">
+			<input type="submit" value="save" class="mt-1 btn btn-success"
+				id="saveId">
+		</div>
+		<div class="mt-2">
+			<div class="h3">Your Cart</div>
+
+
+			<div class="col-2">
+				<label for="totalPriceId" class="font-weight-bold">Total
+					Price</label> <input type="text" readonly class="form-control"
+					name="totalPrice" id="totalPriceId">
+			</div>
+			<table class="table table-bordered table-striped mt-2">
+				<thead>
+					<tr>
+						<th>Sl.#</th>
+						<th>Product Id</th>
+						<th>Product Name</th>
+						<th>No.of units</th>
+						<th>Unit Price</th>
+						<th>Total Price</th>
+						<th>Action</th>
+					</tr>
+
+				</thead>
+
+				<tbody id="showId">
+
+				</tbody>
+
+			</table>
+
+
+		</div>
+
+
+	</div>
+
+	<script type="text/javascript">
+		$(document)
+				.ready(
+						function() {
+							$.ajax({
+								type : 'GET',
+								url : '/BillProduct/billproduct/getFormData',
+								success : function(resp) {
+									console.log(resp.prodList);
+									var st = "<option value='0'>-select-</option>"
+									for(let p of resp.prodList) {
+										st += "<option value='"+p.product_id+"'>"+p.name+"</option>";
+										
+									}
+									$("#prodId").html(st);
+								}
+							});
+						})
+		function findUnitCostByProductId(pr) {
+			$.ajax({
+				type : 'GET',
+				url : '/BillProduct/billproduct/findUnitCostByProductId',
+				data : {
+					productId : pr,
+				},
+				success : function(resp) {
+					//alert(resp);
+					$('#uniPriceId').val(resp);
+				}
+			});
+
+		}
+		
+	    $('#saveId').click(function (e) {
+			console.log("yes the button is working ");
+			const custName = $('#custnameId').val();
+			const custPhone = $('#custphnId').val();
+			if (!custName || !custPhone) {
+				alert("Please enter all the details!");
+				return;
+			}
+			const totalBill = $('#totalPriceId').val();
+			const noOfUnits = $('#unitId').val();
+			const product = [];
+			$('#showId tr').each(function () {
+				const row = $(this);
+				const product_id = row.find('td:nth-child(2)').text();
+				const name = row.find('td:nth-child(3)').text();
+				const qnty = row.find('td:nth-child(4)').text();
+				const unit_price = row.find('td:nth-child(5)').text();
+				product.push({
+					product_id,
+					name,
+					qnty,
+					unit_price,
+				});
+			});
+			const billProduct = {
+					no_of_units : noOfUnits, 
+					bill:{c_name : custName,
+						c_phone : custPhone,
+						total_amount : totalBill
+						},
+					productList : product
+			}
+		    console.log(billProduct);
+			$.ajax({
+				type : 'POST',
+				url : '/BillProduct/billproduct/saveBillData',
+				data : {
+					e : JSON.stringify(billProduct)
+				},
+				success : function(resp) {
+					console.log(resp);
+				}
+			});
+		});
+	</script>
+	<script src="js/data.js"></script>
+</body>
+</html>
