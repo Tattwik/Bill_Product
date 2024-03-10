@@ -1,0 +1,75 @@
+package tech.csm.domain;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class Bill implements Serializable {
+    
+	@JsonProperty("bill_id")
+	private Integer billId;
+	
+	@JsonProperty("c_name")
+	private String cName;
+	
+	@JsonProperty("c_phone")
+	private String cPhone;
+	
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@JsonProperty("bill_date")
+	private Date billDate;
+	
+	@JsonProperty("total_amount")
+	private Double totalAmount;
+
+	public Integer getBillId() {
+		return billId;
+	}
+
+	public void setBillId(Integer billId) {
+		this.billId = billId;
+	}
+
+	public String getcName() {
+		return cName;
+	}
+
+	public void setcName(String cName) {
+		this.cName = cName;
+	}
+
+	public String getcPhone() {
+		return cPhone;
+	}
+
+	public void setcPhone(String cPhone) {
+		this.cPhone = cPhone;
+	}
+
+	public Date getBillDate() {
+		return billDate;
+	}
+
+	public void setBillDate(Date billDate) {
+		this.billDate = billDate;
+	}
+
+	public Double getTotalAmount() {
+		return totalAmount;
+	}
+
+	public void setTotalAmount(Double totalAmount) {
+		this.totalAmount = totalAmount;
+	}
+
+	@Override
+	public String toString() {
+		return "Bill [billId=" + billId + ", cName=" + cName + ", cPhone=" + cPhone + ", billDate=" + billDate
+				+ ", totalAmount=" + totalAmount + "]";
+	}
+	
+	
+}
