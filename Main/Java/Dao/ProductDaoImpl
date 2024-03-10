@@ -1,0 +1,58 @@
+package tech.csm.dao;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
+import tech.csm.domain.Product;
+
+@Repository
+public class ProductDaoImpl implements ProductDao {
+	
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+	
+	@Override
+	public List<Product> getAllProducts() {
+		List<Product> prodlist = jdbcTemplate.query("{call getallproducts()}", 
+				new RowMapper<Product>() {
+
+					@Override
+					public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
+						Product p = new Product();
+						p.setProductId(rs.getInt(1));
+						p.setProductName(rs.getString(2));
+						p.setQuantity(rs.getInt(3));
+						p.setUnitPrice(rs.getDouble(4));
+						return p;
+					}
+				});
+		return prodlist;
+	}
+
+	@Override
+	public List<Product> getUnitByProdId(Integer pId) {
+		
+		List<Product> prodList = jdbcTemplate.query("{call get_unit_by_prod_id(?)}", 
+				new RowMapper<Product>() {
+
+					@Override
+					public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
+						Product p = new Product();
+						p.setProductName(rs.getString(1));
+						p.setQuantity(rs.getInt(2));
+						p.setUnitPrice(rs.getDouble(3));
+						return p;
+					}
+				}, new Object[] {pId});
+		return prodList;
+	}
+
+}
