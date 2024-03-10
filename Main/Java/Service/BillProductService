@@ -1,0 +1,9 @@
+package tech.csm.service;
+
+import tech.csm.domain.BillProduct;
+
+public interface BillProductService {
+
+	String saveBill(BillProduct bp);
+
+}
