@@ -1,0 +1,82 @@
+package tech.csm.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+import org.springframework.stereotype.Repository;
+
+import tech.csm.domain.BillProduct;
+import tech.csm.domain.Product;
+
+@Repository
+public class BillProductDaoImpl implements BillProductDao {
+	
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	private DataSource dataSource;
+	
+	@Override
+	public String saveBill(BillProduct bp) {
+		List<Product> pList = bp.getProductList();
+		SimpleJdbcCall spCall = new SimpleJdbcCall(dataSource).withProcedureName("save_bill")
+				.declareParameters(new SqlParameter("status", java.sql.Types.VARCHAR),
+			    new SqlParameter("p_custName", java.sql.Types.VARCHAR),
+			    new SqlParameter("p_custPhone", java.sql.Types.VARCHAR),
+			    new SqlParameter("p_prodId", java.sql.Types.INTEGER),
+			    new SqlParameter("p_NoOfUn", java.sql.Types.INTEGER),
+			    new SqlParameter("p_billId", java.sql.Types.INTEGER),
+			    new SqlParameter("p_billDate", java.sql.Types.DATE),
+			    new SqlParameter("p_total", java.sql.Types.DOUBLE),
+			    new SqlOutParameter("bId", java.sql.Types.INTEGER));
+		
+		MapSqlParameterSource mps = new MapSqlParameterSource().addValue("status", "sb")
+				.addValue("p_custName", bp.getBill().getcName())
+				.addValue("p_custPhone", bp.getBill().getcPhone())
+				.addValue("p_prodId", null)
+				.addValue("p_NoOfUn", null)
+				.addValue("p_billId", null)
+				.addValue("p_billDate", bp.getBill().getBillDate())
+				.addValue("p_total", bp.getBill().getTotalAmount()); 
+		
+		Map<String, Object> mappMap = spCall.execute(mps);
+		Object ob = mappMap.get("bId");
+		System.out.println(ob);
+	    
+		for(Product p : pList) {
+			SimpleJdbcCall spCall2 = new SimpleJdbcCall(dataSource).withProcedureName("save_bill")
+					.declareParameters(new SqlParameter("status", java.sql.Types.VARCHAR),
+				    new SqlParameter("p_custName", java.sql.Types.VARCHAR),
+				    new SqlParameter("p_custPhone", java.sql.Types.VARCHAR),
+				    new SqlParameter("p_prodId", java.sql.Types.INTEGER),
+				    new SqlParameter("p_NoOfUn", java.sql.Types.INTEGER),
+				    new SqlParameter("p_billId", java.sql.Types.INTEGER),
+				    new SqlParameter("p_billDate", java.sql.Types.DATE),
+				    new SqlParameter("p_total", java.sql.Types.DOUBLE),
+				    new SqlOutParameter("bId", java.sql.Types.INTEGER));
+			
+			MapSqlParameterSource mps2 = new MapSqlParameterSource().addValue("status", "bp")
+					.addValue("p_custName", null)
+					.addValue("p_custPhone",null)
+					.addValue("p_prodId", p.getProductId())
+					.addValue("p_NoOfUn", p.getQuantity())
+					.addValue("p_billId", ob)
+					.addValue("p_billDate", null)
+					.addValue("p_total", null); 
+			
+			Map<String, Object> mappMap2 = spCall.execute(mps2);	
+		}
+		
+		return "successfully inserted";
+	}
+
+}
