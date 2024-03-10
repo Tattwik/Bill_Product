@@ -1,0 +1,20 @@
+package tech.csm.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import tech.csm.dao.BillProductDao;
+import tech.csm.domain.BillProduct;
+
+@Service
+public class BillProductServiceImpl implements BillProductService {
+	
+	@Autowired
+	private BillProductDao billProductDao;
+
+	@Override
+	public String saveBill(BillProduct bp) {
+		return billProductDao.saveBill(bp);
+	}
+
+}
