@@ -1,0 +1,72 @@
+package tech.csm.controller;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.experimental.var;
+import tech.csm.domain.BillProduct;
+import tech.csm.domain.Product;
+import tech.csm.service.BillProductService;
+import tech.csm.service.ProductService;
+
+@Controller
+@RequestMapping(path = "/billproduct")
+public class BillProductController {
+	
+	@Autowired 
+	private BillProductService billProductService;
+	
+	@Autowired
+	private ProductService productService;
+   
+	@GetMapping
+	public String getForm() {
+		return "index";
+	}
+	
+	@ResponseBody
+	@GetMapping("/getFormData")
+	public Map<String, Object> getFormData() {
+		Map<String, Object> mapList = new HashMap<>();
+		List<Product> prodList = productService.getAllProducts();
+		mapList.put("prodList", prodList);
+		return mapList;
+	}
+	
+	@ResponseBody
+	@GetMapping("/findUnitCostByProductId")
+	public void findUnitCostByProductId(@RequestParam ("productId") Integer pId, HttpServletResponse resp) throws IOException {
+		List<Product> unitList = productService.getUnitByProdId(pId);
+	    Double unitPrice = unitList.get(0).getUnitPrice();
+	    resp.getWriter().print(unitPrice);
+	}
+	
+	@ResponseBody
+	@PostMapping("/saveBillData")
+	public String saveBillData(@RequestParam ("e") String e) throws JsonMappingException, JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		BillProduct bp = mapper.readValue(e, BillProduct.class);
+		bp.getBill().setBillDate(new Date());
+		System.out.println(bp);
+		String msgString = billProductService.saveBill(bp);
+		return msgString;
+	}
+}
