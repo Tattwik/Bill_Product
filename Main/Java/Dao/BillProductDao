@@ -1,0 +1,9 @@
+package tech.csm.dao;
+
+import tech.csm.domain.BillProduct;
+
+public interface BillProductDao {
+
+	String saveBill(BillProduct bp);
+
+}
